@@ -1,3 +1,4 @@
-# libbasis
+# libcore
 
-The basis library for all other SJSU-Dev2 libraries
+Library containing the set of core device drivers APIs and interface driver
+interfaces for SJSU-Dev2.
