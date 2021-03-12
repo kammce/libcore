@@ -3,8 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "module.hpp"
-#include "utility/error_handling.hpp"
+#include <libcore/module.hpp>
 
 namespace sjsu
 {

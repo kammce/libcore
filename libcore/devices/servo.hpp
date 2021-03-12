@@ -2,10 +2,11 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <algorithm>
 
-#include "peripherals/pwm.hpp"
-#include "module.hpp"
-#include "utility/math/map.hpp"
+#include <libcore/peripherals/pwm.hpp>
+#include <libcore/module.hpp>
+#include <libcore/utility/math/map.hpp>
 
 namespace sjsu
 {

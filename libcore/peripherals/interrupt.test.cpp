@@ -1,5 +1,5 @@
-#include "peripherals/interrupt.hpp"
-#include "testing/testing_frameworks.hpp"
+#include <libcore/peripherals/interrupt.hpp>
+#include <libcore/testing/testing_frameworks.hpp>
 
 namespace sjsu
 {

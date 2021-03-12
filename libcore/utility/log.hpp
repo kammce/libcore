@@ -9,7 +9,7 @@
 /// Apple's CLANG 10 which is the default clang headers on OSX. Not to be
 /// confused by LLVM's actual CLANG 10.
 #if defined(__clang_analyzer__)
-#include "utility/dummy/source_location"
+#include <libcore/utility/polyfill/source_location>
 #else
 #include <experimental/source_location>
 #endif
@@ -22,14 +22,10 @@
 #include <string_view>
 #include <type_traits>
 
-#include "config.hpp"
-#include "log_levels.hpp"
-#include "utility/ansi_terminal_codes.hpp"
-#include "utility/constexpr.hpp"
-#include "utility/debug.hpp"
-#include "utility/error_handling.hpp"
-#include "utility/macros.hpp"
-#include "utility/time/time.hpp"
+#include <libcore/utility/log_levels.hpp>
+#include <libcore/utility/ansi_terminal_codes.hpp>
+#include <libcore/utility/constexpr.hpp>
+#include <libcore/utility/time/time.hpp>
 
 namespace sjsu
 {
@@ -59,9 +55,9 @@ struct Log  // NOLINT
   {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"
-
+    static constexpr size_t kPrintfBufferSize = 512;
     // Container for the formatted log string
-    std::array<char, config::kPrintfBufferSize> buffer;
+    std::array<char, kPrintfBufferSize> buffer;
 
     // Write log prefix statement to the buffer.
     int position =
@@ -126,7 +122,7 @@ struct LogDebug  // NOLINT
            const std::experimental::source_location & location =
                std::experimental::source_location::current())
   {
-    if constexpr (config::kLogLevel <= SJ2_LOG_LEVEL_DEBUG)
+    // if constexpr (config::kLogLevel <= SJ2_LOG_LEVEL_DEBUG)
     {
       Log<Params...>(
           SJ2_BACKGROUND_PURPLE "   DEBUG", format, params..., location);
@@ -153,7 +149,7 @@ struct LogInfo  // NOLINT
           const std::experimental::source_location & location =
               std::experimental::source_location::current())
   {
-    if constexpr (config::kLogLevel <= SJ2_LOG_LEVEL_INFO)
+    // if constexpr (config::kLogLevel <= SJ2_LOG_LEVEL_INFO)
     {
       Log<Params...>(
           SJ2_BACKGROUND_GREEN "    INFO", format, params..., location);
@@ -182,7 +178,7 @@ struct LogWarning  // NOLINT
              const std::experimental::source_location & location =
                  std::experimental::source_location::current())
   {
-    if constexpr (config::kLogLevel <= SJ2_LOG_LEVEL_WARNING)
+    // if constexpr (config::kLogLevel <= SJ2_LOG_LEVEL_WARNING)
     {
       Log<Params...>(
           SJ2_BACKGROUND_YELLOW " WARNING", format, params..., location);
@@ -209,7 +205,7 @@ struct LogError  // NOLINT
            const std::experimental::source_location & location =
                std::experimental::source_location::current())
   {
-    if constexpr (config::kLogLevel <= SJ2_LOG_LEVEL_ERROR)
+    // if constexpr (config::kLogLevel <= SJ2_LOG_LEVEL_ERROR)
     {
       Log<Params...>(
           SJ2_BACKGROUND_RED "   ERROR", format, params..., location);
@@ -238,41 +234,3 @@ template <typename... Params>
 LogError(const char * format, Params...)->LogError<Params...>;
 }  // namespace sjsu
 
-/// When the condition is false, issue a critical level message to the user and
-/// halt the processor.
-#define SJ2_ASSERT_FATAL_WITH_DUMP(with_dump, condition, fatal_message, ...) \
-  do                                                                         \
-  {                                                                          \
-    if (!(condition))                                                        \
-    {                                                                        \
-      ::sjsu::LogError("Assertion Failure, Condition Tested: " #condition    \
-                       "\n          " fatal_message SJ2_COLOR_RESET,         \
-                       ##__VA_ARGS__);                                       \
-      if ((with_dump) && ::config::kIncludeBacktrace)                        \
-      {                                                                      \
-        printf("\nPrinting Stack Trace:\n\n");                               \
-        ::sjsu::debug::PrintBacktrace(true);                                 \
-      }                                                                      \
-      ::sjsu::Halt();                                                        \
-    }                                                                        \
-  } while (0)
-
-/// If the condition if found ot be false, print the expression and dump the
-/// backtrace.
-#if defined(HOST_TEST)
-#define SJ2_ASSERT_FATAL(condition, fatal_message, ...)                \
-  /* Without the if statement using the (condition) and _SJ2_USED() */ \
-  /* the compiler may complain about unused variables.              */ \
-  /* This serves to silence those warnings during host tests.       */ \
-  if (condition)                                                       \
-  {                                                                    \
-    _SJ2_USED(fatal_message);                                          \
-  }
-#else
-#define SJ2_ASSERT_FATAL(condition, fatal_message, ...) \
-  SJ2_ASSERT_FATAL_WITH_DUMP(true, (condition), fatal_message, ##__VA_ARGS__)
-#endif  // defined(HOST_TEST)
-/// Print a variable using the printf_specifier supplied.
-#define SJ2_PRINT_VARIABLE(variable, printf_specifier) \
-  ::sjsu::LogDebug(#variable " = " printf_specifier, (variable))
-/// @}

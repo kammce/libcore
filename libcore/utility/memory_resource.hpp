@@ -3,8 +3,6 @@
 #include <cstddef>
 #include <memory_resource>
 
-#include "utility/log.hpp"
-
 namespace sjsu
 {
 /// The StaticMemoryResource is the polymorphic memory resource allocator of
@@ -64,25 +62,10 @@ class StaticMemoryResource : public std::pmr::memory_resource
     return Capacity() - MemoryUsed();
   }
 
-  /// Print to STDOUT the total capcity, memory allocated and memory left in
-  /// allocator.
-  void Print() const
-  {
-    LogInfo("StaticMemoryResource >> Capacity: %zu, Allocated: %zu, Left: %d",
-            Capacity(),
-            MemoryUsed(),
-            MemoryAvailable());
-  }
-
  protected:
   /// Implemenation of the do_allocate() method for std::pmr::memory_resource
   void * do_allocate(std::size_t bytes, std::size_t alignment) override
   {
-    LogDebug("Allocating %zu @ alignment %zu, left: %zu\n",
-             bytes,
-             alignment,
-             MemoryAvailable());
-
     // Request a pointer to unallocated memory from the
     // monotonic_buffer_resource buffer.
     void * allocated_address = resource_.allocate(bytes, alignment);

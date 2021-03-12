@@ -1,5 +1,5 @@
-#include "devices/io/parallel_bus.hpp"
-#include "testing/testing_frameworks.hpp"
+#include <libcore/devices/parallel_bus.hpp>
+#include <libcore/testing/testing_frameworks.hpp>
 
 namespace sjsu
 {

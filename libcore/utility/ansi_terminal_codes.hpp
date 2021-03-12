@@ -1,8 +1,6 @@
 #pragma once
 
-#include "config.hpp"
-
-#if defined(SJ2_ENABLE_ANSI_CODES) && SJ2_ENABLE_ANSI_CODES == true
+#if defined(SJ2_ENABLE_ANSI_CODES)
 #define SJ2_COLOR_RESET "\e[0m"
 // Color text
 #define SJ2_BLACK "\e[0;30m"

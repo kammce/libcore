@@ -2,13 +2,12 @@
 
 #include <cstdint>
 #include <initializer_list>
+#include <libcore/module.hpp>
+#include <libcore/peripherals/inactive.hpp>
+#include <libcore/utility/time/time.hpp>
 #include <limits>
 #include <span>
-
-#include "peripherals/inactive.hpp"
-#include "module.hpp"
-#include "utility/error_handling.hpp"
-#include "utility/time/time.hpp"
+#include <string_view>
 
 namespace sjsu
 {

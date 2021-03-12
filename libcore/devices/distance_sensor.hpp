@@ -7,9 +7,8 @@
 
 #include <cstdint>
 
-#include "module.hpp"
-#include "utility/error_handling.hpp"
-#include "utility/math/units.hpp"
+#include <libcore/module.hpp>
+#include <libcore/utility/math/units.hpp>
 
 namespace sjsu
 {

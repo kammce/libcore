@@ -2,9 +2,8 @@
 
 #include <functional>
 
-#include "module.hpp"
-#include "utility/error_handling.hpp"
-#include "utility/infrared_algorithms.hpp"
+#include <libcore/module.hpp>
+#include <libcore/utility/infrared_algorithms.hpp>
 
 namespace sjsu
 {

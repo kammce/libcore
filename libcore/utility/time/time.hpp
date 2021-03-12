@@ -2,15 +2,12 @@
 
 #include <time.h>
 
-#include <cstdint>
 #include <cinttypes>
-#include <functional>
+#include <cstdint>
 #include <cstdio>
-
-#include "utility/macros.hpp"
-#include "utility/error_handling.hpp"
-#include "utility/math/units.hpp"
-#include "utility/build_info.hpp"
+#include <functional>
+#include <libcore/utility/build_info.hpp>
+#include <libcore/utility/math/units.hpp>
 
 namespace sjsu
 {
@@ -71,7 +68,7 @@ inline bool Wait(std::chrono::nanoseconds timeout,
   }
   else
   {
-    if constexpr (build::IsPlatform(build::Platform::host))
+    if constexpr (build::IsPlatform("host"))
     {
       // NOTE: During host tests the default uptime counter will auto increment
       // by 1, which will resulting in the default uptime being 1ns additional
@@ -122,7 +119,7 @@ inline void Delay(std::chrono::nanoseconds delay_time)
 {
   // For Linux Systems since using Wait (which will busy loop) will drive the
   // CPU utilization up to maximum.
-  if constexpr (build::kPlatform == build::Platform::linux)
+  if constexpr (build::IsPlatform("linux"))
   {
     // Needs to use the linux timespec structure to pass into nanosleep
     timespec ts;
