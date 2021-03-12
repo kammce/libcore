@@ -3,10 +3,8 @@
 #include <cmath>
 #include <cstdint>
 
-#include "module.hpp"
-#include "utility/error_handling.hpp"
-#include "utility/log.hpp"
-#include "utility/math/units.hpp"
+#include <libcore/module.hpp>
+#include <libcore/utility/math/units.hpp>
 
 namespace sjsu
 {
@@ -50,15 +48,6 @@ class Accelerometer : public Module<AccelerometerSettings_t>
     units::acceleration::meters_per_second_squared_t y;
     /// Acceleration in the z axis
     units::acceleration::meters_per_second_squared_t z;
-
-    /// Print the acceleration of this object.
-    void Print()
-    {
-      sjsu::LogInfo("{  x: %.4f m/s^2,  y: %.4f m/s^2,  z: %.4f m/s^2 }",
-                    x.to<double>(),
-                    y.to<double>(),
-                    z.to<double>());
-    }
   };
 
   /// Accelerometer driver will read each axis of acceleration and convert the

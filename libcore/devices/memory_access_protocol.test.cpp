@@ -1,9 +1,8 @@
+#include <libcore/devices/memory_access_protocol.hpp>
+#include <libcore/testing/testing_frameworks.hpp>
+#include <libcore/utility/math/bit.hpp>
 #include <numeric>
 #include <string>
-
-#include "devices/memory_access_protocol.hpp"
-#include "testing/testing_frameworks.hpp"
-#include "utility/math/bit.hpp"
 
 namespace sjsu
 {
@@ -107,8 +106,8 @@ TEST_CASE_TEMPLATE("Testing MemoryAccessProtocol",
     void SetReadValue(std::span<uint8_t> new_read_value)
     {
       read_value.fill(0);
-      std::copy(new_read_value.begin(), new_read_value.end(),
-                read_value.begin());
+      std::copy(
+          new_read_value.begin(), new_read_value.end(), read_value.begin());
     }
 
     std::array<uint8_t, kArraySize> write_address = {};
@@ -145,10 +144,11 @@ TEST_CASE_TEMPLATE("Testing MemoryAccessProtocol",
 
     // Setup: Create a test register.
     auto test_register =
-        TestAddress(kSpec, {
-                               .address = kTruncatedTestAddress,
-                               .width   = static_cast<uint8_t>(register_width),
-                           });
+        TestAddress(kSpec,
+                    {
+                        .address = kTruncatedTestAddress,
+                        .width   = static_cast<uint8_t>(register_width),
+                    });
 
     // Setup: Convert the truncated test address into a byte array,
     // based on the endianness
@@ -165,13 +165,15 @@ TEST_CASE_TEMPLATE("Testing MemoryAccessProtocol",
     if (kEndian == std::endian::big)
     {
       // Copy address_bytes into expected_address
-      std::copy_n(&expected_address_bytes.end()[-kAddressWidth], kAddressWidth,
+      std::copy_n(&expected_address_bytes.end()[-kAddressWidth],
+                  kAddressWidth,
                   expected_address.begin());
     }
     else
     {
       // Copy address_bytes into expected_address
-      std::copy_n(expected_address_bytes.begin(), kAddressWidth,
+      std::copy_n(expected_address_bytes.begin(),
+                  kAddressWidth,
                   expected_address.begin());
     }
 
@@ -183,8 +185,10 @@ TEST_CASE_TEMPLATE("Testing MemoryAccessProtocol",
     INFO("Register Width   = " << register_width);
 
     // Check all valid integer assignment types
-    for (const size_t & value_width : { sizeof(uint8_t), sizeof(uint16_t),
-                                        sizeof(uint32_t), sizeof(uint64_t) })
+    for (const size_t & value_width : { sizeof(uint8_t),
+                                        sizeof(uint16_t),
+                                        sizeof(uint32_t),
+                                        sizeof(uint64_t) })
     {
       test_iteration_counter++;
 
@@ -209,12 +213,14 @@ TEST_CASE_TEMPLATE("Testing MemoryAccessProtocol",
       {
         // Copy value_bytes into expected_value
         std::copy_n(&expected_value_bytes.end()[-register_width],
-                    register_width, expected_value.begin());
+                    register_width,
+                    expected_value.begin());
       }
       else
       {
         // Copy value_bytes into expected_value
-        std::copy_n(expected_value_bytes.begin(), register_width,
+        std::copy_n(expected_value_bytes.begin(),
+                    register_width,
                     expected_value.begin());
       }
 

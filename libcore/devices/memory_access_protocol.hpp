@@ -9,10 +9,9 @@
 #include <type_traits>
 #include <utility>
 
-#include "peripherals/i2c.hpp"
-#include "utility/math/byte.hpp"
-#include "utility/enum.hpp"
-#include "utility/error_handling.hpp"
+#include <libcore/peripherals/i2c.hpp>
+#include <libcore/utility/math/byte.hpp>
+#include <libcore/utility/enum.hpp>
 
 namespace sjsu
 {

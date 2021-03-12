@@ -2,9 +2,8 @@
 
 #include <cstdint>
 #include <functional>
-
-#include "module.hpp"
-#include "peripherals/inactive.hpp"
+#include <libcore/module.hpp>
+#include <libcore/peripherals/inactive.hpp>
 
 namespace sjsu
 {
@@ -46,7 +45,7 @@ class InterruptController : public Module<>
     /// The handler for the interrupt. Can be set to nullptr if you plan to
     /// disable the interrupt. Setting this field to nullptr with an enabled
     /// interrupt, will cause std::abort to be called when the interrupt occurs.
-    InterruptHandler interrupt_handler;
+    InterruptHandler interrupt_handler = []() {};
 
     /// Priority of the interrupt. The actual value here and what is means is
     /// dependent on the platform you are running on. -1 is considered the "do
@@ -64,7 +63,8 @@ class InterruptController : public Module<>
   ///
   /// @param interrupt_controller - a pointer to the current platform's
   ///        interrupt controller.
-  static void SetPlatformController(InterruptController * interrupt_controller)
+  static void SetPlatformController(
+      sjsu::InterruptController * interrupt_controller)
   {
     platform_interrupt_controller = interrupt_controller;
   }

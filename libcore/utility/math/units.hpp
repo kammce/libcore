@@ -1,14 +1,14 @@
 #pragma once
-
+#pragma GCC system_header
 // This file configures and pulls in the units library.
-#undef _U
-#undef _L
-#undef _N
-#undef _S
-#undef _P
-#undef _C
-#undef _X
-#undef _B
+// #undef _U
+// #undef _L
+// #undef _N
+// #undef _S
+// #undef _P
+// #undef _C
+// #undef _X
+// #undef _B
 #define BUILD_TESTS OFF
 #define UNIT_LIB_DISABLE_IOSTREAM
 #define UNIT_LIB_DEFAULT_TYPE float
@@ -29,7 +29,7 @@
 #define ENABLE_PREDEFINED_ACCELERATION_UNITS
 #define ENABLE_PREDEFINED_ANGULAR_VELOCITY_UNITS
 
-#include "third_party/units/units.h"
+#include <libcore/external/units/units.h>
 #include <chrono>
 
 using namespace std::chrono_literals;  // NOLINT

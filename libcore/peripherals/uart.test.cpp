@@ -1,9 +1,9 @@
-#include "peripherals/uart.hpp"
+#include <libcore/peripherals/uart.hpp>
 
 #include <algorithm>
 #include <array>
 
-#include "testing/testing_frameworks.hpp"
+#include <libcore/testing/testing_frameworks.hpp>
 
 namespace sjsu
 {

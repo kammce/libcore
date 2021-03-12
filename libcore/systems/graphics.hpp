@@ -5,10 +5,9 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "module.hpp"
-#include "devices/displays/pixel_display.hpp"
-#include "third_party/font8x8/font8x8_basic.h"
-#include "utility/log.hpp"
+#include <libcore/module.hpp>
+#include <libcore/devices/pixel_display.hpp>
+#include <libcore/external/font8x8/font8x8_basic.h>
 
 namespace sjsu
 {

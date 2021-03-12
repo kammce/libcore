@@ -1,6 +1,5 @@
-#include "devices/actuators/servo/servo.hpp"
-
-#include "testing/testing_frameworks.hpp"
+#include <libcore/devices/servo.hpp>
+#include <libcore/testing/testing_frameworks.hpp>
 
 namespace sjsu
 {

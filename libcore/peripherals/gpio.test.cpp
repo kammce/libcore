@@ -1,5 +1,5 @@
-#include "testing/testing_frameworks.hpp"
-#include "peripherals/gpio.hpp"
+#include <libcore/testing/testing_frameworks.hpp>
+#include <libcore/peripherals/gpio.hpp>
 
 namespace sjsu
 {
@@ -47,6 +47,33 @@ TEST_CASE("Testing L1 gpio")
 
     // Verify
     Verify(Method(mock_gpio, Set).Using(sjsu::Gpio::State::kLow));
+  }
+
+  SECTION("PullUp()")
+  {
+    // Exercise
+    gpio.settings.PullUp();
+
+    // Verify
+    CHECK(gpio.settings.resistor == PinSettings_t::Resistor::kPullUp);
+  }
+
+  SECTION("PullDown()")
+  {
+    // Exercise
+    gpio.settings.PullDown();
+
+    // Verify
+    CHECK(gpio.settings.resistor == PinSettings_t::Resistor::kPullDown);
+  }
+
+  SECTION("Floating()")
+  {
+    // Exercise
+    gpio.settings.Floating();
+
+    // Verify
+    CHECK(gpio.settings.resistor == PinSettings_t::Resistor::kNone);
   }
 }
 }  // namespace sjsu
