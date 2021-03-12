@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "testing/testing_frameworks.hpp"
+#include <libcore/testing/testing_frameworks.hpp>
 #include "utility/debug.hpp"
 
 namespace sjsu

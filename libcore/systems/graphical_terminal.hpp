@@ -3,11 +3,10 @@
 #include <cstdarg>
 #include <cstdint>
 
-#include "peripherals/lpc40xx/gpio.hpp"
-#include "peripherals/lpc40xx/spi.hpp"
-#include "devices/displays/oled/ssd1306.hpp"
-#include "systems/graphics/graphics.hpp"
-#include "module.hpp"
+#include <libcore/peripherals/gpio.hpp>
+#include <libcore/peripherals/spi.hpp>
+#include <libcore/systems/graphics.hpp>
+#include <libcore/module.hpp>
 
 namespace sjsu
 {

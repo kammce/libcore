@@ -7,15 +7,15 @@
 #include <cstdint>
 #include <functional>
 #include <initializer_list>
+#include <libcore/module.hpp>
+#include <libcore/peripherals/inactive.hpp>
+#include <libcore/utility/math/units.hpp>
+#include <libcore/utility/memory_resource.hpp>
+#include <libcore/utility/time/time.hpp>
 #include <optional>
 #include <span>
 #include <unordered_map>
 #include <utility>
-
-#include "peripherals/inactive.hpp"
-#include "module.hpp"
-#include "utility/memory_resource.hpp"
-#include "utility/log.hpp"
 
 namespace sjsu
 {
@@ -321,28 +321,17 @@ class CanNetwork : public sjsu::Module<>
   /// associated with the set ID.
   [[nodiscard]] Node_t * CaptureMessage(uint32_t id)
   {
-    try
-    {
-      Node_t empty_node;
+    Node_t empty_node;
 
-      // Insert an empty Node_t into the map with the following ID as
-      // the key. This is how each ID is remembered when calls to
-      // ReceiveHandler() and GetMessage() are performed. ReceiveHandler() will
-      // ignore messages with IDs that are not already keys within the map.
-      // GetMessage() will throw an exception.
-      messages_.emplace(std::make_pair(id, empty_node));
+    // Insert an empty Node_t into the map with the following ID as
+    // the key. This is how each ID is remembered when calls to
+    // ReceiveHandler() and GetMessage() are performed. ReceiveHandler() will
+    // ignore messages with IDs that are not already keys within the map.
+    // GetMessage() will throw an exception.
+    messages_.emplace(std::make_pair(id, empty_node));
 
-      // Return reference to the newly made Node_t.
-      return &messages_[id];
-    }
-    // will be thrown if memory resource is exhausted.
-    catch (std::bad_alloc & e)
-    {
-      LogDebug("Could not add ID 0x%" PRIX32
-               ", memory resource has been exhausted!",
-               id);
-      throw;
-    }
+    // Return reference to the newly made Node_t.
+    return &messages_[id];
   }
 
   /// Manually call the receive handler. This is useful for unit testing and for

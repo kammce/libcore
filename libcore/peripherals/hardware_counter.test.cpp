@@ -1,6 +1,6 @@
-#include "peripherals/hardware_counter.hpp"
+#include <libcore/peripherals/hardware_counter.hpp>
 
-#include "testing/testing_frameworks.hpp"
+#include <libcore/testing/testing_frameworks.hpp>
 
 namespace sjsu
 {
@@ -19,15 +19,12 @@ auto GetLambda(sjsu::InterruptCallback & isr)
 
 TEST_CASE("Testing L1 GpioCounter")
 {
-  Mock<sjsu::Pin> mock_pin;
-
   // Create mocked versions of the sjsu::Pin
   Mock<sjsu::Gpio> mock_gpio;
   Fake(Method(mock_gpio, Gpio::ModuleInitialize));
   Fake(Method(mock_gpio, Gpio::SetDirection));
   Fake(Method(mock_gpio, Gpio::AttachInterrupt));
   Fake(Method(mock_gpio, Gpio::DetachInterrupt));
-  When(Method(mock_gpio, Gpio::GetPin)).AlwaysReturn(mock_pin.get());
 
   sjsu::Gpio & gpio = mock_gpio.get();
 
@@ -48,7 +45,7 @@ TEST_CASE("Testing L1 GpioCounter")
       Verify(
           Method(mock_gpio, Gpio::AttachInterrupt).Using(_, Gpio::Edge::kBoth))
           .Once();
-      CHECK(mock_pin.get().settings.resistor ==
+      CHECK(mock_gpio.get().settings.resistor ==
             PinSettings_t::Resistor::kPullUp);
     }
 
@@ -68,7 +65,7 @@ TEST_CASE("Testing L1 GpioCounter")
       Verify(
           Method(mock_gpio, Gpio::AttachInterrupt).Using(_, Gpio::Edge::kBoth))
           .Once();
-      CHECK(mock_pin.get().settings.resistor ==
+      CHECK(mock_gpio.get().settings.resistor ==
             PinSettings_t::Resistor::kPullDown);
     }
   }
@@ -101,7 +98,7 @@ TEST_CASE("Testing L1 GpioCounter")
     test_subject.Initialize();
 
     // Exercise: (1) Count up
-    test_subject.SetDirection(HardwareCounter::Direction::kUp);
+    test_subject.SetDirection(HardwareCounter::CountDirection::kUp);
     for (int i = 0; i < kCountUps; i++)
     {
       callback();
@@ -111,7 +108,7 @@ TEST_CASE("Testing L1 GpioCounter")
     CHECK(test_subject.GetCount() == kCountUps);
 
     // Exercise: (2) Count down
-    test_subject.SetDirection(HardwareCounter::Direction::kDown);
+    test_subject.SetDirection(HardwareCounter::CountDirection::kDown);
     for (int i = 0; i < kCountDowns; i++)
     {
       callback();

@@ -9,12 +9,8 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-
-#include "config.hpp"
-#include "newlib/newlib.hpp"
-#include "utility/ansi_terminal_codes.hpp"
-#include "utility/build_info.hpp"
-#include "utility/macros.hpp"
+#include <libcore/utility/ansi_terminal_codes.hpp>
+#include <libcore/utility/build_info.hpp>
 
 namespace sjsu
 {
@@ -184,10 +180,7 @@ inline auto HexdumpStructure(const Structure & address)
 template <size_t kNumberOfRowsBuffered = 1>
 inline void HexdumpDebug(void * address, size_t length)
 {
-  if constexpr (config::kLogLevel <= SJ2_LOG_LEVEL_DEBUG)
-  {
-    Hexdump<kNumberOfRowsBuffered>(address, length);
-  }
+  Hexdump<kNumberOfRowsBuffered>(address, length);
 }
 
 // ==============================================
@@ -198,9 +191,7 @@ inline _Unwind_Reason_Code PrintAddressAsList(_Unwind_Context * context,
 {
   int * depth      = static_cast<int *>(depth_pointer);
   intptr_t address = static_cast<intptr_t>(_Unwind_GetIP(context));
-  printf("  %d) 0x%08" PRIXPTR "\n",
-         *depth,
-         address - config::kBacktraceAddressOffset);
+  printf("  %d) 0x%08" PRIXPTR "\n", *depth, address);
   (*depth)++;
   return _URC_NO_REASON;
 }
@@ -210,7 +201,7 @@ inline _Unwind_Reason_Code PrintAddressInRow(_Unwind_Context * context,
 {
   int * depth      = static_cast<int *>(depth_pointer);
   intptr_t address = static_cast<intptr_t>(_Unwind_GetIP(context));
-  printf("0x%08" PRIXPTR " ", address - config::kBacktraceAddressOffset);
+  printf("0x%08" PRIXPTR " ", address);
   (*depth)++;
   return _URC_NO_REASON;
 }
@@ -230,33 +221,30 @@ inline _Unwind_Reason_Code PrintAddressInRow(_Unwind_Context * context,
 inline void PrintBacktrace(bool show_make_command = false,
                            void * final_address   = nullptr)
 {
-  if constexpr (config::kIncludeBacktrace)
+  int depth = 0;
+  _Unwind_Backtrace(&PrintAddressAsList, &depth);
+  if (final_address)
   {
-    int depth = 0;
-    _Unwind_Backtrace(&PrintAddressAsList, &depth);
+    printf("  %d) 0x%p\n", depth, final_address);
+  }
+
+  if (show_make_command)
+  {
+    printf("\nRun: the following command in your project directory");
+    printf("\n\n  " SJ2_BOLD_WHITE);
+    printf("make stacktrace PLATFORM=%s TRACES=\"",
+           build::Stringify(build::kPlatform));
+
+    _Unwind_Backtrace(&PrintAddressInRow, &depth);
     if (final_address)
     {
-      printf("  %d) 0x%p\n", depth, final_address);
+      printf("0x%p", final_address);
     }
 
-    if (show_make_command)
-    {
-      printf("\nRun: the following command in your project directory");
-      printf("\n\n  " SJ2_BOLD_WHITE);
-      printf("make stacktrace PLATFORM=%s TRACES=\"",
-             build::Stringify(build::kPlatform));
-
-      _Unwind_Backtrace(&PrintAddressInRow, &depth);
-      if (final_address)
-      {
-        printf("0x%p", final_address);
-      }
-
-      printf("\"\n\n" SJ2_COLOR_RESET);
-      printf(
-          "This will report the file and line number that led to this function "
-          "being called.\n");
-    }
+    printf("\"\n\n" SJ2_COLOR_RESET);
+    printf(
+        "This will report the file and line number that led to this function "
+        "being called.\n");
   }
 }
 }  // namespace debug

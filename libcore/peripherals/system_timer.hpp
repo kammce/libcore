@@ -3,13 +3,10 @@
 #pragma once
 
 #include <cstdint>
-
-#include "peripherals/inactive.hpp"
-#include "peripherals/interrupt.hpp"
-#include "config.hpp"
-#include "module.hpp"
-#include "utility/error_handling.hpp"
-#include "utility/math/units.hpp"
+#include <libcore/module.hpp>
+#include <libcore/peripherals/inactive.hpp>
+#include <libcore/peripherals/interrupt.hpp>
+#include <libcore/utility/math/units.hpp>
 
 namespace sjsu
 {
@@ -19,7 +16,7 @@ struct SystemTimerSettings_t
   /// The operating frequency of the system timer. This specifies how often the
   /// callback is called. Setting this to 1 kHz will result in callback being
   /// called every 1ms.
-  units::frequency::hertz_t frequency = config::kRtosFrequency;
+  units::frequency::hertz_t frequency = 1_kHz;
 
   /// The callback to be executed based on the operating frequency.
   InterruptCallback callback = []() {};

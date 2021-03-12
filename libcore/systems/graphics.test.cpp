@@ -1,5 +1,5 @@
-#include "systems/graphics/graphics.hpp"
-#include "testing/testing_frameworks.hpp"
+#include <libcore/systems/graphics.hpp>
+#include <libcore/testing/testing_frameworks.hpp>
 
 namespace sjsu
 {

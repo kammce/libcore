@@ -2,10 +2,9 @@
 
 #include <atomic>
 #include <cstdint>
-
-#include "peripherals/gpio.hpp"
-#include "module.hpp"
-#include "utility/enum.hpp"
+#include <libcore/module.hpp>
+#include <libcore/peripherals/gpio.hpp>
+#include <libcore/utility/enum.hpp>
 
 namespace sjsu
 {
@@ -17,7 +16,7 @@ class HardwareCounter : public Module<>
 {
  public:
   /// Definitions of the directions that a counter to count in.
-  enum class Direction : int8_t
+  enum class CountDirection : int8_t
   {
     kDown = -1,
     kUp   = 1,
@@ -33,7 +32,7 @@ class HardwareCounter : public Module<>
   /// the counter to begin counting in that direction as events occur.
   ///
   /// @param direction - the direction (either up or down) to count.
-  virtual void SetDirection(Direction direction) = 0;
+  virtual void SetDirection(CountDirection direction) = 0;
 
   /// Get the current count from hardware timer.
   virtual int32_t GetCount() = 0;
@@ -54,13 +53,17 @@ class GpioCounter : public HardwareCounter
               sjsu::Gpio::Edge edge,
               sjsu::PinSettings_t::Resistor pull =
                   sjsu::PinSettings_t::Resistor::kPullUp)
-      : gpio_(gpio), edge_(edge), pull_(pull)
+      : gpio_(gpio),
+        edge_(edge),
+        pull_(pull),
+        count_(0),
+        direction_(CountDirection::kUp)
   {
   }
 
   void ModuleInitialize() override
   {
-    gpio_.GetPin().settings.resistor = pull_;
+    gpio_.settings.resistor = pull_;
     gpio_.Initialize();
     gpio_.SetAsInput();
 
@@ -78,7 +81,7 @@ class GpioCounter : public HardwareCounter
     count_ = new_count_value;
   }
 
-  void SetDirection(HardwareCounter::Direction direction) override
+  void SetDirection(CountDirection direction) override
   {
     direction_ = direction;
   }
@@ -97,7 +100,7 @@ class GpioCounter : public HardwareCounter
   sjsu::Gpio & gpio_;
   sjsu::Gpio::Edge edge_;
   sjsu::PinSettings_t::Resistor pull_;
-  std::atomic<int32_t> count_       = 0;
-  std::atomic<Direction> direction_ = Direction::kUp;
+  std::atomic<int32_t> count_;
+  std::atomic<CountDirection> direction_;
 };
 }  // namespace sjsu

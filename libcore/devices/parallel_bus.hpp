@@ -1,10 +1,9 @@
 #pragma once
 
 #include <cstdint>
-
-#include "peripherals/gpio.hpp"
-#include "module.hpp"
-#include "utility/log.hpp"
+#include <libcore/module.hpp>
+#include <libcore/peripherals/gpio.hpp>
+#include <libcore/utility/error_handling.hpp>
 
 namespace sjsu
 {

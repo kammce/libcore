@@ -1,6 +1,5 @@
-#include "peripherals/adc.hpp"
-
-#include "testing/testing_frameworks.hpp"
+#include <libcore/peripherals/adc.hpp>
+#include <libcore/testing/testing_frameworks.hpp>
 
 namespace sjsu
 {

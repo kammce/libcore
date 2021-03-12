@@ -1,9 +1,9 @@
 #pragma once
 
-#include "peripherals/hardware_counter.hpp"
-#include "module.hpp"
-#include "utility/time/time.hpp"
-#include "utility/math/units.hpp"
+#include <libcore/module.hpp>
+#include <libcore/peripherals/hardware_counter.hpp>
+#include <libcore/utility/math/units.hpp>
+#include <libcore/utility/time/time.hpp>
 
 namespace sjsu
 {
@@ -21,7 +21,7 @@ class FrequencyCounter : public Module<>
   void ModuleInitialize() override
   {
     counter_->Initialize();
-    counter_->SetDirection(HardwareCounter::Direction::kUp);
+    counter_->SetDirection(HardwareCounter::CountDirection::kUp);
     previous_time_ = Uptime();
   }
 

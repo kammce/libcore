@@ -1,8 +1,8 @@
-#include "peripherals/can.hpp"
+#include <libcore/peripherals/can.hpp>
 
 #include <vector>
 
-#include "testing/testing_frameworks.hpp"
+#include <libcore/testing/testing_frameworks.hpp>
 
 namespace doctest
 {

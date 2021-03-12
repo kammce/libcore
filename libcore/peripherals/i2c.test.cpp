@@ -1,5 +1,5 @@
-#include "testing/testing_frameworks.hpp"
-#include "peripherals/i2c.hpp"
+#include <libcore/testing/testing_frameworks.hpp>
+#include <libcore/peripherals/i2c.hpp>
 
 namespace sjsu
 {

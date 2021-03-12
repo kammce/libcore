@@ -10,7 +10,7 @@
 //
 #pragma once
 
-#include "utility/time/time.hpp"
+#include <libcore/utility/time/time.hpp>
 
 namespace sjsu
 {
