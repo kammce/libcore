@@ -123,9 +123,6 @@ class Gpio : public Module<PinSettings_t>
     kBoth    = 2
   };
 
-  /// Set internal port and pin values.
-  constexpr Gpio(uint8_t port, uint8_t pin) : port_(port), pin_(pin) {}
-
   /// Set pin as an output or an input
   ///
   /// NOTE: this method acts is the GPIO initialization, and must be called
@@ -210,26 +207,6 @@ class Gpio : public Module<PinSettings_t>
   {
     return AttachInterrupt(callback, Edge::kBoth);
   }
-
-  /// Getter method for the pin's port.
-  ///
-  /// @returns The pin's port.
-  uint8_t GetPort() const
-  {
-    return port_;
-  }
-
-  /// Getter method for the pin's pin.
-  ///
-  /// @returns The pin's pin.
-  uint8_t GetPin() const
-  {
-    return pin_;
-  }
-
- private:
-  const uint8_t port_;
-  const uint8_t pin_;
 };
 
 /// Template specialization that generates an inactive sjsu::Gpio.
@@ -239,7 +216,6 @@ inline sjsu::Gpio & GetInactive<sjsu::Gpio>()
   class InactiveGpio : public sjsu::Gpio
   {
    public:
-    InactiveGpio(uint8_t port, uint8_t pin) : sjsu::Gpio(port, pin) {}
     void ModuleInitialize() override {}
     void SetDirection(Direction) override {}
     void Set(State) override {}
@@ -252,7 +228,7 @@ inline sjsu::Gpio & GetInactive<sjsu::Gpio>()
     void DetachInterrupt() override {}
   };
 
-  static InactiveGpio inactive(0, 0);
+  static InactiveGpio inactive;
   return inactive;
 }
 }  // namespace sjsu
