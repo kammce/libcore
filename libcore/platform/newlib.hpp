@@ -283,7 +283,7 @@ extern "C"
     {
       // Check that by allocating this space, we do not exceed the heap area.
       // If so, set new_memory_location to nullptr
-      if ((heap_position + increment) <= &heap_end)
+      if ((heap_position + increment) <= &_heap_end)
       {
         new_memory_location = static_cast<void *>(heap_position);
         heap_position += increment;
