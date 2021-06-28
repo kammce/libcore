@@ -8,8 +8,10 @@
 #include <cstring>
 #include <exception>
 #include <functional>
+#include <libcore/platform/ram.hpp>
 #include <libcore/utility/ansi_terminal_codes.hpp>
 #include <libcore/utility/error_handling.hpp>
+#include <libcore/utility/log.hpp>
 #include <libcore/utility/memory_resource.hpp>
 #include <span>
 #include <vector>
@@ -136,9 +138,8 @@ class NewlibManager
     /// Read from a resource
     const std::span<read_function> GetReader() override
     {
-      static read_function dummy_read_function = [](int, char *, int) -> int {
-        return 0;
-      };
+      static read_function dummy_read_function = [](int, char *, int) -> int
+      { return 0; };
       static std::array<read_function, 1> array = { dummy_read_function };
       return array;
     }
@@ -193,7 +194,7 @@ class NewlibManager
 
 inline void HandleExceptionPointer(std::exception_ptr exception_pointer)
 {
-  printf(SJ2_BACKGROUND_RED "Uncaught exception: ");
+  sjsu::log::Critical("Uncaught exception: ");
   try
   {
     if (exception_pointer)
@@ -203,7 +204,7 @@ inline void HandleExceptionPointer(std::exception_ptr exception_pointer)
   }
   catch (const std::exception & e)
   {
-    printf("std::exception(%s)\n", e.what());
+    sjsu::log::Critical("std::exception(%s)\n", e.what());
   }
   catch (sjsu::Exception & e)
   {
@@ -211,10 +212,8 @@ inline void HandleExceptionPointer(std::exception_ptr exception_pointer)
   }
   catch (...)
   {
-    printf("Unknown...\n");
+    sjsu::log::Critical("Unknown...\n");
   }
-
-  puts(SJ2_COLOR_RESET);
 }
 }  // namespace sjsu
 
@@ -324,15 +323,15 @@ extern "C"
     // Print based on return code value
     if (return_code >= 0)
     {
-      printf("\n" SJ2_BOLD_WHITE SJ2_BACKGROUND_GREEN
-             "Program Returned Exit Code: %d\n" SJ2_COLOR_RESET,
-             return_code);
+      sjsu::log::Print("\n" SJ2_BOLD_WHITE SJ2_BACKGROUND_GREEN
+                          "Program Returned Exit Code: %d\n" SJ2_COLOR_RESET,
+                          return_code);
     }
     else
     {
-      printf("\n" SJ2_BOLD_WHITE SJ2_BACKGROUND_RED
-             "Program Returned Exit Code: %d\n" SJ2_COLOR_RESET,
-             return_code);
+      sjsu::log::Print("\n" SJ2_BOLD_WHITE SJ2_BACKGROUND_RED
+                          "Program Returned Exit Code: %d\n" SJ2_COLOR_RESET,
+                          return_code);
     }
 
     sjsu::HandleExceptionPointer(std::current_exception());
@@ -349,6 +348,13 @@ extern "C"
   {
     char character_value = static_cast<char>(character);
     return _write(0, &character_value, 1);
+  }
+
+  // Overload default libnano putchar() with a more optimal version that does
+  // not use dynamic memory
+  inline int _putchar(int character)  // NOLINT
+  {
+    return putchar(character);
   }
 
   // Overload default libnano puts() with a more optimal version that does
@@ -393,6 +399,7 @@ inline void AddNewlibSymbols()
     reinterpret_cast<void *>(_close_r), reinterpret_cast<void *>(_isatty_r),
     reinterpret_cast<void *>(_sbrk),    reinterpret_cast<void *>(_write),
     reinterpret_cast<void *>(_read),    reinterpret_cast<void *>(_exit),
+    reinterpret_cast<void *>(_putchar),
   };
 }
 }  // namespace sjsu

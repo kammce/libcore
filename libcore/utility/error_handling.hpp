@@ -8,6 +8,8 @@
 #include <experimental/source_location>
 #endif
 
+#include <libcore/utility/log.hpp>
+
 namespace sjsu
 {
 /// @return constexpr const char* - the string representation of the std::errc
@@ -153,13 +155,13 @@ class Exception : std::exception
   void Print() const
   {
     /// Print the colored error text to STDOUT
-    printf("Error:%s(%d):%s:%d:%s(): %s\n",
-           Stringify(code_),
-           static_cast<int>(code_),
-           file_,
-           line_,
-           function_,
-           message_);
+    sjsu::log::Print("Error:%s(%d):%s:%d:%s(): %s\n",
+                     Stringify(code_),
+                     static_cast<int>(code_),
+                     file_,
+                     line_,
+                     function_,
+                     message_);
   }
 
   /// @return std::errc - the error code number

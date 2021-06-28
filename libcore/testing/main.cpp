@@ -2,10 +2,9 @@
 
 #include <unistd.h>
 
+#include <libcore/platform/ram.hpp>
+#include <libcore/testing/testing_frameworks.hpp>
 #include <span>
-
-#include "platforms/utility/ram.hpp"
-#include "testing_frameworks.hpp"
 
 // =============================================================================
 // Define Empty InitializePlatform()

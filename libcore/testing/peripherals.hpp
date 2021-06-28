@@ -1,9 +1,8 @@
 #pragma once
 
-#include <string>
-
 #include <libcore/testing/testing_frameworks.hpp>
-#include "utility/debug.hpp"
+#include <libcore/utility/debug.hpp>
+#include <string>
 
 namespace sjsu
 {

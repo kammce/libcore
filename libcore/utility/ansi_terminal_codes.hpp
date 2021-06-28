@@ -11,6 +11,7 @@
 #define SJ2_PURPLE "\e[0;35m"
 #define SJ2_CYAN "\e[0;36m"
 #define SJ2_WHITE "\e[0;37m"
+#define SJ2_GRAY "\e[0;37m"
 // Bold Color text
 #define SJ2_BOLD_BLACK "\e[1;30m"
 #define SJ2_BOLD_RED "\e[1;31m"

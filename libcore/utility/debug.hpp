@@ -232,8 +232,7 @@ inline void PrintBacktrace(bool show_make_command = false,
   {
     printf("\nRun: the following command in your project directory");
     printf("\n\n  " SJ2_BOLD_WHITE);
-    printf("make stacktrace PLATFORM=%s TRACES=\"",
-           build::Stringify(build::kPlatform));
+    printf("make stacktrace PLATFORM=%s TRACES=\"", build::kPlatform.data());
 
     _Unwind_Backtrace(&PrintAddressInRow, &depth);
     if (final_address)
