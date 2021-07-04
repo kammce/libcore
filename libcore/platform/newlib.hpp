@@ -226,9 +226,23 @@ extern "C"
     return 1;
   }
 
+  // Dummy implementation of getpid
+  // NOLINTNEXTLINE(readability-identifier-naming)
+  inline int getpid()
+  {
+    return 1;
+  }
+
   // Dummy implementation of kill
   // NOLINTNEXTLINE(readability-identifier-naming)
   inline int _kill(int, int)
+  {
+    return -1;
+  }
+
+  // Dummy implementation of kill
+  // NOLINTNEXTLINE(readability-identifier-naming)
+  inline int kill(int, int)
   {
     return -1;
   }
@@ -282,7 +296,7 @@ extern "C"
     {
       // Check that by allocating this space, we do not exceed the heap area.
       // If so, set new_memory_location to nullptr
-      if ((heap_position + increment) <= &_heap_end)
+      if ((heap_position + increment) <= &__heap_end)
       {
         new_memory_location = static_cast<void *>(heap_position);
         heap_position += increment;
@@ -324,13 +338,13 @@ extern "C"
     if (return_code >= 0)
     {
       sjsu::log::Print("\n" SJ2_BOLD_WHITE SJ2_BACKGROUND_GREEN
-                          "Program Returned Exit Code: %d\n" SJ2_COLOR_RESET,
+                          "Program Returned Exit Code: {}\n" SJ2_COLOR_RESET,
                           return_code);
     }
     else
     {
       sjsu::log::Print("\n" SJ2_BOLD_WHITE SJ2_BACKGROUND_RED
-                          "Program Returned Exit Code: %d\n" SJ2_COLOR_RESET,
+                          "Program Returned Exit Code: {}\n" SJ2_COLOR_RESET,
                           return_code);
     }
 
@@ -394,7 +408,7 @@ namespace sjsu
 inline void AddNewlibSymbols()
 {
   static void * newlib_function_symols[] [[gnu::used]] = {
-    reinterpret_cast<void *>(_getpid),  reinterpret_cast<void *>(_kill),
+    reinterpret_cast<void *>(_getpid), reinterpret_cast<void *>(getpid),  reinterpret_cast<void *>(_kill),  reinterpret_cast<void *>(kill),
     reinterpret_cast<void *>(_fstat),   reinterpret_cast<void *>(_lseek_r),
     reinterpret_cast<void *>(_close_r), reinterpret_cast<void *>(_isatty_r),
     reinterpret_cast<void *>(_sbrk),    reinterpret_cast<void *>(_write),

@@ -64,7 +64,7 @@ struct Decorators
     if constexpr ((DEBUG_LOGS || INFO_LOGS) && ENABLE_LOGS)
     {
       fmt::print(
-          "{}:{}:{}:{}s" SJ2_HI_BLACK,
+          "{}:{}:{}:{}s> " SJ2_HI_BLACK,
           location.file_name(),
           location.line(),
           location.function_name(),
@@ -78,7 +78,7 @@ struct Decorators
     if constexpr (DEBUG_LOGS && ENABLE_LOGS)
     {
       fmt::print(
-          "{}:{}:{}:{}s" SJ2_HI_YELLOW,
+          "{}:{}:{}:{}s> " SJ2_HI_YELLOW,
           location.file_name(),
           location.line(),
           location.function_name(),
@@ -92,7 +92,7 @@ struct Decorators
     if constexpr (ENABLE_LOGS)
     {
       fmt::print(
-          "{}:{}:{}:{}s" SJ2_WHITE,
+          "{}:{}:{}:{}s> ",
           location.file_name(),
           location.line(),
           location.function_name(),
@@ -106,7 +106,7 @@ struct Decorators
     if constexpr (ENABLE_LOGS)
     {
       fmt::print(
-          "{}:{}:{}:{}s" SJ2_RED,
+          "{}:{}:{}:{}s> " SJ2_RED,
           location.file_name(),
           location.line(),
           location.function_name(),
