@@ -5,23 +5,9 @@
 /// @{
 #pragma once
 
-/// This is required for Apple/OSX as source_location is not available on
-/// Apple's CLANG 10 which is the default clang headers on OSX. Not to be
-/// confused by LLVM's actual CLANG 10.
-#if defined(__clang_analyzer__)
-#include <libcore/utility/polyfill/source_location>
-#else
-#include <experimental/source_location>
-#endif
-
-#include <algorithm>
-#include <array>
 #include <chrono>
-#include <cinttypes>
-#include <cstdio>
-#include <cstring>
+#include <experimental/source_location>
 #include <libcore/utility/ansi_terminal_codes.hpp>
-#include <libcore/utility/constexpr.hpp>
 #include <libcore/utility/time/time.hpp>
 #include <string_view>
 #include <type_traits>
@@ -64,7 +50,7 @@ struct Decorators
     if constexpr ((DEBUG_LOGS || INFO_LOGS) && ENABLE_LOGS)
     {
       fmt::print(
-          "{}:{}:{}:{}s" SJ2_HI_BLACK,
+          "{}:{}:{}:{}s> " SJ2_HI_BLACK,
           location.file_name(),
           location.line(),
           location.function_name(),
@@ -78,7 +64,7 @@ struct Decorators
     if constexpr (DEBUG_LOGS && ENABLE_LOGS)
     {
       fmt::print(
-          "{}:{}:{}:{}s" SJ2_HI_YELLOW,
+          "{}:{}:{}:{}s> " SJ2_HI_YELLOW,
           location.file_name(),
           location.line(),
           location.function_name(),
@@ -92,7 +78,7 @@ struct Decorators
     if constexpr (ENABLE_LOGS)
     {
       fmt::print(
-          "{}:{}:{}:{}s" SJ2_WHITE,
+          "{}:{}:{}:{}s> " SJ2_HI_BOLD_WHITE,
           location.file_name(),
           location.line(),
           location.function_name(),
@@ -106,7 +92,7 @@ struct Decorators
     if constexpr (ENABLE_LOGS)
     {
       fmt::print(
-          "{}:{}:{}:{}s" SJ2_RED,
+          "{}:{}:{}:{}s> " SJ2_RED,
           location.file_name(),
           location.line(),
           location.function_name(),
@@ -118,21 +104,21 @@ struct Decorators
   {
     if constexpr ((DEBUG_LOGS || INFO_LOGS) && ENABLE_LOGS)
     {
-      fputs(SJ2_COLOR_RESET, stdout);
+      fmt::print(SJ2_COLOR_RESET);
     }
   };
   static inline std::function<void(void)> debug_suffix = []()
   {
     if constexpr (DEBUG_LOGS && ENABLE_LOGS)
     {
-      fputs(SJ2_COLOR_RESET, stdout);
+      fmt::print(SJ2_COLOR_RESET);
     }
   };
   static inline std::function<void(void)> print_suffix = []()
   {
     if constexpr (ENABLE_LOGS)
     {
-      fputs(SJ2_COLOR_RESET, stdout);
+      fmt::print(SJ2_COLOR_RESET);
     }
   };
   static inline std::function<void(void)> critical_suffix = []()
