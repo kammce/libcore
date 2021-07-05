@@ -12,6 +12,7 @@
 #include <libcore/utility/ansi_terminal_codes.hpp>
 #include <libcore/utility/build_info.hpp>
 
+
 namespace sjsu
 {
 namespace debug
