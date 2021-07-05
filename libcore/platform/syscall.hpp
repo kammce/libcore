@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdio>
 #include <functional>
 #include <libcore/peripherals/uart.hpp>
 #include <libcore/utility/ansi_terminal_codes.hpp>
@@ -14,8 +15,8 @@ namespace sjsu
 class SysCall
 {
  public:
-  using write_function = std::function<int(int, const char *, int)>;
-  using read_function  = std::function<int(int, char *, int)>;
+  using write_function = std::function<int(FILE *, const char *, int)>;
+  using read_function  = std::function<int(FILE *, char *, int)>;
 
   /// Write to a resource
   virtual const std::span<write_function> GetWriter() = 0;
@@ -40,7 +41,7 @@ class SysCall
   {
     // Create a routine for writing to the UART port
     AddWriter(
-        [&serial_port](int, const char * buffer, int length) -> int
+        [&serial_port](FILE *, const char * buffer, int length) -> int
         {
           serial_port.Write(std::span<const std::byte>(
               reinterpret_cast<const std::byte *>(buffer), length));
@@ -49,11 +50,15 @@ class SysCall
 
     // Create a routine for reading to the UART port
     AddReader(
-        [&serial_port](int, char * buffer, int length) -> int
+        [&serial_port](FILE *, char * buffer, int length) -> int
         {
-          serial_port.Read(std::span<std::byte>(
-              reinterpret_cast<std::byte *>(buffer), length));
-          return length;
+          if (serial_port.HasData())
+          {
+            int bytes_read = serial_port.Read(std::span<std::byte>(
+                reinterpret_cast<std::byte *>(buffer), length));
+            return bytes_read;
+          }
+          return 0;
         });
   }
 };
@@ -103,8 +108,6 @@ class StaticSysCall : public SysCall
 class SysCallManager
 {
  public:
-  inline static StaticSysCall<2> default_newlib;
-
   /// Set the controller for the platform. This is set by the system's
   /// platforms startup code and does not need to be executed by the
   /// user. This can be run by the user if they want to inject their own
@@ -125,30 +128,6 @@ class SysCallManager
   static SysCall & Get()
   {
     return *platform_newlib;
-  }
-
-  static int Write(int file, const void * source_buffer, size_t length)
-  {
-    for (auto writer : Get().GetWriter())
-    {
-      writer(file, reinterpret_cast<const char *>(source_buffer), length);
-    }
-    return length;
-  }
-
-  static int Read(int file, void * destination_buffer, size_t length)
-  {
-    int bytes_read = 0;
-    for (auto reader : Get().GetReader())
-    {
-      bytes_read =
-          reader(file, reinterpret_cast<char *>(destination_buffer), length);
-      if (bytes_read > 0)
-      {
-        break;
-      }
-    }
-    return bytes_read;
   }
 
   static void HandleExceptionPointer(std::exception_ptr exception_pointer)
@@ -176,26 +155,73 @@ class SysCallManager
   }
 
  protected:
-  /// Global platform system controller scoped within this class. Most
-  /// systems only need a single platform system controller, and thus this
-  /// can hold a general/default platform system controller that can be
-  /// retrieved via Set and Get.
-  static inline SysCall * platform_newlib = &default_newlib;
-};
+  static int Write(FILE * file, const char * source_buffer, size_t length)
+  {
+    for (auto writer : Get().GetWriter())
+    {
+      writer(file, source_buffer, length);
+    }
+    return length;
+  }
 
+  static int Read(FILE * file, char * destination_buffer, size_t length)
+  {
+    int bytes_read = 0;
+    for (auto reader : Get().GetReader())
+    {
+      bytes_read = reader(file, destination_buffer, length);
+      if (bytes_read > 0)
+      {
+        break;
+      }
+    }
+    return bytes_read;
+  }
+
+  static int Flush([[maybe_unused]] FILE * file)
+  {
+    Write(file, buffer.data(), buffer.size());
+    buffer.clear();
+    return 0;
+  }
+
+  static int PutChar(char c, [[maybe_unused]] FILE * file)
+  {
+    if (buffer.size() == memory_resource.Capacity())
+    {
+      Flush(file);
+    }
+
+    buffer.push_back(c);
+
+    if (c == '\n')
+    {
+      Flush(file);
+    }
+
+    return 0;
+  }
+
+  static int GetChar([[maybe_unused]] FILE * file)
+  {
+    char byte = 0;
+    Read(file, &byte, sizeof(byte));
+    return byte;
+  }
+
+  inline static StaticSysCall<2> default_newlib;
+  inline static SysCall * platform_newlib = &default_newlib;
+  inline static sjsu::StaticMemoryResource<BUFSIZ> memory_resource;
+  inline static std::pmr::vector<char> buffer;
+
+ public:
+  inline static FILE stdio =
+      FDEV_SETUP_STREAM(PutChar, GetChar, Flush, _FDEV_SETUP_RW);
+};
 }  // namespace sjsu
 
 extern "C"
 {
-  inline size_t fwrite(const void * buffer,
-                       size_t size,
-                       size_t count,
-                       FILE * stream)
-  {
-    return sjsu::SysCallManager::Write(
-        reinterpret_cast<int>(stream), buffer, count * size);
-  }
-
   // NOLINTNEXTLINE(readability-identifier-naming)
   inline void _exit(int return_code)
   {
@@ -238,8 +264,11 @@ extern "C"
   inline void __cxa_pure_virtual() {}
   inline void __cxa_atexit() {}
 
-  inline struct _reent r = { 0, nullptr, reinterpret_cast<FILE *>(1), nullptr };
-  inline struct _reent * _impure_ptr = &r;
+  inline FILE * const __iob[3] = {
+    &sjsu::SysCallManager::stdio,
+    &sjsu::SysCallManager::stdio,
+    &sjsu::SysCallManager::stdio,
+  };
 }
 
 namespace sjsu
@@ -251,13 +280,13 @@ namespace sjsu
 /// eliminated entierly, with the symbols still in the final binary.
 inline void AddSysCallSymbols()
 {
-  static void * system_call_symols[] [[gnu::used]] = {
-    reinterpret_cast<void *>(_exit),
-    reinterpret_cast<void *>(__cxa_pure_virtual),
-    reinterpret_cast<void *>(__cxa_atexit),
-    reinterpret_cast<void *>(fwrite),
-    reinterpret_cast<void *>(kill),
-    reinterpret_cast<void *>(getpid),
+  static const void * system_call_symols[] [[gnu::used]] = {
+      reinterpret_cast<const void *>(_exit),
+      reinterpret_cast<const void *>(__cxa_pure_virtual),
+      reinterpret_cast<const void *>(__cxa_atexit),
+      reinterpret_cast<const void *>(kill),
+      reinterpret_cast<const void *>(getpid),
+      reinterpret_cast<const void *>(__iob),
   };
 }
 }  // namespace sjsu

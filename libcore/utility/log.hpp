@@ -125,7 +125,7 @@ struct Decorators
   {
     if constexpr (ENABLE_LOGS)
     {
-      fputs(SJ2_COLOR_RESET, stdout);
+      fmt::print(SJ2_COLOR_RESET, stdout);
     }
   };
 };
