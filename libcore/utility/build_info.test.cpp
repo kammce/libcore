@@ -1,5 +1,3 @@
-#include <string>
-
 #include <libcore/testing/testing_frameworks.hpp>
 #include <libcore/utility/build_info.hpp>
 

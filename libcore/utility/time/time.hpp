@@ -1,7 +1,5 @@
 #pragma once
 
-#include <time.h>
-
 #include <cinttypes>
 #include <cstdint>
 #include <cstdio>
