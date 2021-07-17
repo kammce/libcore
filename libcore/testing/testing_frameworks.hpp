@@ -35,9 +35,6 @@ bool operator==(std::span<T> lhs, std::span<T> rhs)
 
 using namespace fakeit;  // NOLINT
 
-int HostTestWrite(std::span<const char> payload);
-int HostTestRead(std::span<char> payload);
-
 /// @param expression - and expression that, when executed will throw
 /// @param error_code - the error code to compare the one held by the exception
 #define SJ2_CHECK_EXCEPTION(expression, error_code)                        \
