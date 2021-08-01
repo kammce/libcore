@@ -19,7 +19,7 @@ struct WatchdogSettings_t
 /// the system.
 ///
 /// @ingroup l1_peripheral
-class Watchdog : sjsu::Module<WatchdogSettings_t>
+class Watchdog : public sjsu::Module<WatchdogSettings_t>
 {
  public:
   /// Feeds the watchdog and restarts the sequence.
