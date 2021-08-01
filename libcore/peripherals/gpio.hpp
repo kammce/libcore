@@ -118,9 +118,9 @@ class Gpio : public Module<PinSettings_t>
   /// Defines the set of events that can trigger a GPIO interrupt.
   enum class Edge : uint8_t
   {
-    kRising  = 0,
-    kFalling = 1,
-    kBoth    = 2
+    kRising  = 0b01,
+    kFalling = 0b10,
+    kBoth    = 0b11,
   };
 
   /// Set pin as an output or an input

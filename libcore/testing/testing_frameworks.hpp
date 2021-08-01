@@ -29,7 +29,6 @@ bool operator==(std::span<T> lhs, std::span<T> rhs)
 }
 
 #include <libcore/external/fakeit/fakeit.hpp>
-#include <libcore/external/fff/fff.h>
 #include <libcore/utility/error_handling.hpp>
 #include <libcore/utility/math/units.hpp>
 
@@ -255,6 +254,27 @@ struct StringMaker<std::chrono::duration<T, U>>  // NOLINT
   static String convert(const std::chrono::duration<T, U> & duration)  // NOLINT
   {
     return std::to_string(duration.count()).c_str();
+  }
+};
+
+/// DocTest template specialization for printing std::chrono::duration
+template <typename T, typename U>
+struct StringMaker<std::pair<T, U>>  // NOLINT
+{
+  /// Converts the std::chrono::duration to a Doctest::String
+  static String convert(const std::pair<T, U> & pair)  // NOLINT
+  {
+
+    std::string str;
+
+    str += "std::pair { ";
+    str += pair.first;
+    str += ", ";
+    str += std::to_string(pair.second);
+    str += " } ";
+
+    String result(str.data(), str.size());
+    return result;
   }
 };
 }  // namespace doctest
